@@ -1,7 +1,23 @@
-using Data.Contexts;
+using Core.Concretes.Maps;
+using Business.Middlewares;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+
+
+// (I added these lines)
+// AutoMapper configuration, Core Layer - Maps - Mapping Profile
+builder.Services.AddAutoMapper(opt =>
+{
+    opt.AddProfile<MappingProfile>();
+});
+
+
+
+
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -9,10 +25,11 @@ builder.Services.AddControllersWithViews();
 
 
 
-// Register the DbContext with dependency injection
-builder.Services.AddDbContext<LibraryDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("default")));
 
+// (I added these lines)
+// Database configuration, Bussines Layer - Middlewares - calling CustomServiceExtensions class 
+builder.Services.AddDatabaseConnections(builder.Configuration);
+builder.Services.AddDTOServices();
 
 
 

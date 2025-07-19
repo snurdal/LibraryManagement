@@ -8,11 +8,10 @@
 
   <ItemGroup>
     <Folder Include="Abstracts\Bases\" />
-    <Folder Include="Concretes\DTOs\" />
-    <Folder Include="Concretes\Maps\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.18" />
   </ItemGroup>
 

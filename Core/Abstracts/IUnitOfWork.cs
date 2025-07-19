@@ -13,6 +13,5 @@ namespace Core.Abstracts
         IBookRepository BookRepository { get; }
         ICategoryRepository CategoryRepository { get; }
         Task CommitAsync();
-
     }
 }
