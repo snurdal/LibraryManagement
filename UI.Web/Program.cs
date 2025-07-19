@@ -4,35 +4,20 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
-
-// (I added these lines)
-// AutoMapper configuration, Core Layer - Maps - Mapping Profile
+# region AutoMapper configuration, Core Layer - Maps - Mapping Profile
 builder.Services.AddAutoMapper(opt =>
 {
     opt.AddProfile<MappingProfile>();
 });
-
-
-
-
-
+#endregion
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-
-
-
-
-// (I added these lines)
-// Database configuration, Bussines Layer - Middlewares - calling CustomServiceExtensions class 
+#region Database configuration, Bussines Layer - Middlewares - calling CustomServiceExtensions class 
 builder.Services.AddDatabaseConnections(builder.Configuration);
 builder.Services.AddDTOServices();
-
-
-
+#endregion
 
 
 var app = builder.Build();
