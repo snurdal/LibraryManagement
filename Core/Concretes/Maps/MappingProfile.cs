@@ -19,9 +19,17 @@ namespace Core.Concretes.Maps
             CreateMap<Author, AuthorListDTO>()
                     .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.Books.Count));
 
-            CreateMap<Author, AuthorDetailDTO>();
-            CreateMap<Author, AuthorEditDTO>();
-            CreateMap<AuthorEditDTO, Author>();
+            CreateMap<Author, AuthorDetailDTO>()
+                    .ForMember(dest => dest.Books, opt => opt.MapFrom(src => src.Books.Where(b => b.Active && !b.Deleted)));
+
+            CreateMap<Author, AuthorEditDTO>().ReverseMap();
+
+            CreateMap<AuthorEditDTO, Author>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
+                .ForMember(dest => dest.Active, opt => opt.Ignore())
+                .ForMember(dest => dest.Deleted, opt => opt.Ignore())
+                .ForMember(dest => dest.Books, opt => opt.Ignore());
             #endregion
 
             #region Book Mapping

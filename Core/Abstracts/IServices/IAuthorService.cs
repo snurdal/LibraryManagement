@@ -17,6 +17,6 @@ namespace Core.Abstracts.IServices
         Task<IDataResult<AuthorEditDTO>> GetForEditAsync(int id);
         Task<IResult> UpdateAsync(AuthorEditDTO authorDto);
         Task<IResult> DeleteAsync(int id);
-        Task<IDataResult<AuthorDetailDTO>> CreateAsync(string firstName, string lastName);
+        Task<IDataResult<AuthorDetailDTO>> CreateAsync(string firstName, string lastName, string? biography = null, string? photoPath = null);
     }
 }

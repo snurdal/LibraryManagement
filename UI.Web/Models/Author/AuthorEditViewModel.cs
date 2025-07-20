@@ -5,5 +5,6 @@ namespace UI.Web.Models.Author
     public class AuthorEditViewModel
     {
         public AuthorEditDTO Author { get; set; } = new();
+        public IFormFile? PhotoFile { get; set; }
     }
 }

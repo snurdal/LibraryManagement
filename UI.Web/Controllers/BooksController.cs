@@ -1,5 +1,6 @@
 ﻿using Core.Abstracts.IServices;
 using Microsoft.AspNetCore.Mvc;
+using UI.Web.Helpers;
 using UI.Web.Models.Book;
 
 namespace UI.Web.Controllers
@@ -9,15 +10,15 @@ namespace UI.Web.Controllers
         private readonly IBookService _bookService;
         private readonly ICategoryService _categoryService;
         private readonly IAuthorService _authorService;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IFileUploadService _fileUploadService;
 
         public BooksController(IBookService bookService, ICategoryService categoryService,
-            IAuthorService authorService, IWebHostEnvironment webHostEnvironment)
+            IAuthorService authorService, IFileUploadService fileUploadService)
         {
             _bookService = bookService;
             _categoryService = categoryService;
             _authorService = authorService;
-            _webHostEnvironment = webHostEnvironment;
+            _fileUploadService = fileUploadService;
         }
 
         public async Task<IActionResult> Details(int id)
@@ -87,10 +88,14 @@ namespace UI.Web.Controllers
 
             // Handle cover image upload
             if (coverImage != null && coverImage.Length > 0)
-            {
-                var imagePath = await SaveImageAsync(coverImage);
-                viewModel.Book.CoverImagePath = imagePath;
-            }
+                if (coverImage != null && coverImage.Length > 0)
+                {
+                    var imagePath = await _fileUploadService.UploadFileAsync(coverImage, "bookuploads"); // to "uploads/bookuploads" folder 
+                    if (!string.IsNullOrEmpty(imagePath))
+                    {
+                        viewModel.Book.CoverImagePath = imagePath;
+                    }
+                }
 
             var result = await _bookService.CreateAsync(viewModel.Book);
             if (result.Success)
@@ -142,8 +147,15 @@ namespace UI.Web.Controllers
             // Handle cover image upload
             if (coverImage != null && coverImage.Length > 0)
             {
-                var imagePath = await SaveImageAsync(coverImage);
-                viewModel.Book.CoverImagePath = imagePath;
+                var imagePath = await _fileUploadService.UploadFileAsync(coverImage, "bookuploads");
+                if (!string.IsNullOrEmpty(imagePath))
+                {
+                    // Delete old image if exists
+                    if (!string.IsNullOrEmpty(viewModel.Book.CoverImagePath))
+                        _fileUploadService.DeleteFile(viewModel.Book.CoverImagePath);
+
+                    viewModel.Book.CoverImagePath = imagePath;
+                }
             }
 
             var result = await _bookService.UpdateAsync(viewModel.Book);
@@ -192,22 +204,6 @@ namespace UI.Web.Controllers
 
             if (authorsResult.Success)
                 viewModel.Authors = authorsResult.Data;
-        }
-
-        private async Task<string> SaveImageAsync(IFormFile image)
-        {
-            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "books");
-            Directory.CreateDirectory(uploadsFolder);
-
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await image.CopyToAsync(fileStream);
-            }
-
-            return "/images/books/" + uniqueFileName;
         }
     }
 }

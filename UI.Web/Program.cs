@@ -1,6 +1,7 @@
 using Core.Concretes.Maps;
 using Business.Middlewares;
 using Microsoft.EntityFrameworkCore;
+using UI.Web.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDatabaseConnections(builder.Configuration);
 builder.Services.AddDTOServices();
 #endregion
-
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
 var app = builder.Build();
 

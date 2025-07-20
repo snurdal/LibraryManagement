@@ -26,7 +26,7 @@ namespace Business.Services
             _mapper = mapper;
         }
 
-        public async Task<IDataResult<AuthorDetailDTO>> CreateAsync(string firstName, string lastName)
+        public async Task<IDataResult<AuthorDetailDTO>> CreateAsync(string firstName, string lastName, string? biography = null, string? photoPath = null)
         {
             try
             {
@@ -42,7 +42,9 @@ namespace Business.Services
                 var author = new Author
                 {
                     FirstName = firstName,
-                    LastName = lastName
+                    LastName = lastName,
+                    Biography = biography,
+                    PhotoPath = photoPath
                 };
 
                 await _unitOfWork.AuthorRepository.CreateOneAsync(author);
