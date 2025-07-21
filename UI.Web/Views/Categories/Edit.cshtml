@@ -1,0 +1,61 @@
+﻿@model UI.Web.Models.Category.CategoryEditViewModel
+
+@{
+    ViewData["Title"] = "Edit Category";
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/Home/Index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/Categories/Index">Categories</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Category</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4"><i class="fas fa-edit me-2"></i>Edit Category</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Edit" method="post" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Category.Id" />
+
+                <div class="mb-3">
+                    <label asp-for="Category.Name" class="form-label"></label>
+                    <input asp-for="Category.Name" class="form-control" />
+                    <span class="text-danger" asp-validation-for="Category.Name"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check me-2"></i>Save Changes
+                </button>
+
+                <a href="/Categories/Index" class="btn btn-secondary ms-2">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Bootstrap 5 validation example
+        (() => {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+}

@@ -12,6 +12,13 @@
         </ol>
     </nav>
 
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-tags me-2"></i>Categories</h2>
+        <a href="/Categories/Create" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Category
+        </a>
+    </div>
+
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -28,190 +35,120 @@
         </div>
     }
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="fas fa-tags me-2"></i>Categories</h2>
-            <p class="text-muted mb-0">Manage book categories</p>
-        </div>
-        <div>
-            <a href="/Categories/Create" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Add New Category
-            </a>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                <input type="text" id="searchInput" class="form-control" placeholder="Search categories...">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="d-flex gap-2 justify-content-md-end">
-                <select id="sortSelect" class="form-select" style="width: auto;">
-                    <option value="name-asc">Name (A-Z)</option>
-                    <option value="name-desc">Name (Z-A)</option>
-                    <option value="books-desc">Most Books</option>
-                    <option value="books-asc">Least Books</option>
-                    <option value="date-desc">Newest</option>
-                    <option value="date-asc">Oldest</option>
-                </select>
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-outline-secondary active" id="gridView">
-                        <i class="fas fa-th"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" id="listView">
-                        <i class="fas fa-list"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @if (Model.Categories.Any())
-    {
-        <!-- Grid View -->
-        <div id="gridContainer" class="row">
-            @foreach (var category in Model.Categories)
-            {
-                <div class="col-xl-3 col-lg-4 col-md-6 mb-4 category-item" data-name="@category.Name.ToLower()" data-books="@category.BookCount" data-date="@category.CreateDate.ToString("yyyy-MM-dd")">
-                    <div class="card h-100 category-card">
-                        <div class="card-body d-flex flex-column">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div class="category-icon">
-                                    <i class="fas fa-tag fa-2x text-primary"></i>
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" href="/Categories/Details/@category.Id">
-                                                <i class="fas fa-eye me-2"></i>View Details
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="/Categories/Edit/@category.Id">
-                                                <i class="fas fa-edit me-2"></i>Edit
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a class="dropdown-item text-danger" href="#" onclick="deleteCategory(@category.Id, '@category.Name')">
-                                                <i class="fas fa-trash me-2"></i>Delete
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <h5 class="card-title mb-2">@category.Name</h5>
-
-                            <div class="mt-auto">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="badge bg-primary fs-6">@category.BookCount Books</span>
-                                    <small class="text-muted">@category.CreateDate.ToString("MMM dd, yyyy")</small>
-                                </div>
-
-                                <div class="d-grid gap-2">
-                                    <a href="/Categories/Details/@category.Id" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-eye me-2"></i>View Books
-                                    </a>
-                                </div>
-                            </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    @if (Model?.Categories != null && Model.Categories.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Category Name</th>
+                                        <th scope="col">Book Count</th>
+                                        <th scope="col">Created Date</th>
+                                        <th scope="col" width="150">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int index = 1;
+                                    }
+                                    @foreach (var category in Model.Categories)
+                                    {
+                                        <tr>
+                                            <th scope="row">@index</th>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="category-circle me-3">
+                                                        <i class="fas fa-tag"></i>
+                                                    </div>
+                                                    <div>
+                                                        <strong>@category.Name</strong>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@category.BookCount Books</span>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    @category.CreateDate.ToString("dd MMM yyyy")
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="/Categories/Details/@category.Id" class="btn btn-outline-primary btn-sm" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="/Categories/Edit/@category.Id" class="btn btn-outline-success btn-sm" title="Edit Category">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button class="btn btn-outline-danger btn-sm" title="Delete"
+                                                            onclick="deleteCategory(@category.Id, '@category.Name', @category.BookCount)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        index++;
+                                    }
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-tags fa-5x text-muted mb-4"></i>
+                            <h4 class="text-muted">No Categories Found</h4>
+                            <p class="text-muted mb-4">No categories available in the library.</p>
+                            <a href="/Categories/Create" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create First Category
+                            </a>
+                        </div>
+                    }
                 </div>
-            }
-        </div>
-
-        <!-- List View (Hidden by default) -->
-        <div id="listContainer" class="d-none">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th><i class="fas fa-tag me-2"></i>Category Name</th>
-                            <th><i class="fas fa-book me-2"></i>Books Count</th>
-                            <th><i class="fas fa-calendar me-2"></i>Created Date</th>
-                            <th class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var category in Model.Categories)
-                        {
-                            <tr class="category-row" data-name="@category.Name.ToLower()" data-books="@category.BookCount" data-date="@category.CreateDate.ToString("yyyy-MM-dd")">
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-tag text-primary me-3"></i>
-                                        <div>
-                                            <h6 class="mb-0">@category.Name</h6>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary">@category.BookCount</span>
-                                </td>
-                                <td class="text-muted">@category.CreateDate.ToString("MMM dd, yyyy")</td>
-                                <td class="text-end">
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="/Categories/Details/@category.Id" class="btn btn-outline-info" title="View Details">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="/Categories/Edit/@category.Id" class="btn btn-outline-warning" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button class="btn btn-outline-danger" title="Delete" onclick="deleteCategory(@category.Id, '@category.Name')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
             </div>
         </div>
-    }
-    else
-    {
-        <div class="text-center py-5">
-            <div class="empty-state">
-                <i class="fas fa-tags fa-4x text-muted mb-4"></i>
-                <h4 class="text-muted mb-3">No Categories Found</h4>
-                <p class="text-muted mb-4">Start by creating your first book category to organize your library.</p>
-                <a href="/Categories/Create" class="btn btn-primary btn-lg">
-                    <i class="fas fa-plus me-2"></i>Create First Category
-                </a>
-            </div>
-        </div>
-    }
+    </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirm Delete</h5>
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete this category?</p>
-                <p><strong id="categoryName"></strong></p>
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    This action cannot be undone. Books in this category will become uncategorized.
+                <div class="text-center mb-3">
+                    <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                    <p class="mb-2">Are you sure you want to delete this category?</p>
+                    <h6 class="text-dark" id="categoryName"></h6>
+                </div>
+                <div class="alert alert-warning border-0" id="warningAlert">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-exclamation-triangle me-3 text-warning mt-1"></i>
+                        <div>
+                            <strong>Warning:</strong> This action cannot be undone. <span id="bookCountWarning"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
                 <form id="deleteForm" method="post" style="display: inline;">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i>Delete
+                        <i class="fas fa-trash me-2"></i>Delete Category
                     </button>
                 </form>
             </div>
@@ -220,135 +157,75 @@
 </div>
 
 <style>
-    .category-card {
-        transition: all 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.125);
-    }
-
-        .category-card:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
-        }
-
-    .category-icon {
-        width: 60px;
-        height: 60px;
+    .category-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(13, 110, 253, 0.1);
-        border-radius: 50%;
+        color: white;
+        font-size: 16px;
     }
 
-    .empty-state {
-        max-width: 400px;
-        margin: 0 auto;
-    }
-
-    .table th {
-        font-weight: 600;
-        color: #495057;
-        border-bottom: 2px solid #dee2e6;
-    }
-
-    .category-row:hover {
-        background-color: rgba(13, 110, 253, 0.05);
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.1);
     }
 
     .btn-group .btn {
-        border-color: #dee2e6;
+        margin-right: 2px;
     }
 
-    .badge {
-        font-size: 0.875em;
+        .btn-group .btn:last-child {
+            margin-right: 0;
+        }
+
+    /* Alert Auto-hide Animation */
+    .alert {
+        border: none;
+        border-radius: 10px;
+    }
+
+    /* Modal Enhancements */
+    .modal-content {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 1rem 3rem rgba(0,0,0,0.175);
+    }
+
+    .modal-header {
+        padding: 1.5rem 1.5rem 0;
+    }
+
+    .modal-body {
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-footer {
+        padding: 0 1.5rem 1.5rem;
     }
 </style>
 
-<script>
-    // Auto hide alerts after 5 seconds
-    setTimeout(function() {
-        $('.alert').fadeOut('slow');
-    }, 5000);
+@section Scripts {
+    <script>
+        function deleteCategory(categoryId, categoryName, bookCount) {
+            document.getElementById('categoryName').textContent = categoryName;
+            document.getElementById('deleteForm').action = '/Categories/Delete/' + categoryId;
 
-    // Search functionality
-    const searchInput = document.getElementById('searchInput');
-    const sortSelect = document.getElementById('sortSelect');
-    const gridView = document.getElementById('gridView');
-    const listView = document.getElementById('listView');
-    const gridContainer = document.getElementById('gridContainer');
-    const listContainer = document.getElementById('listContainer');
+            // Update warning message based on book count
+            const warningText = bookCount > 0
+                ? `This category contains ${bookCount} book(s). Books will remain but without category reference.`
+                : 'This category has no books associated with it.';
+            document.getElementById('bookCountWarning').textContent = warningText;
 
-    // Search
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const items = document.querySelectorAll('.category-item, .category-row');
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
 
-        items.forEach(item => {
-            const name = item.getAttribute('data-name');
-            if (name.includes(searchTerm)) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    });
-
-    // Sort functionality
-    sortSelect.addEventListener('change', function() {
-        const sortBy = this.value;
-        const gridItems = Array.from(document.querySelectorAll('.category-item'));
-        const listItems = Array.from(document.querySelectorAll('.category-row'));
-
-        const sortFunction = (a, b) => {
-            switch(sortBy) {
-                case 'name-asc':
-                    return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
-                case 'name-desc':
-                    return b.getAttribute('data-name').localeCompare(a.getAttribute('data-name'));
-                case 'books-asc':
-                    return parseInt(a.getAttribute('data-books')) - parseInt(b.getAttribute('data-books'));
-                case 'books-desc':
-                    return parseInt(b.getAttribute('data-books')) - parseInt(a.getAttribute('data-books'));
-                case 'date-asc':
-                    return new Date(a.getAttribute('data-date')) - new Date(b.getAttribute('data-date'));
-                case 'date-desc':
-                    return new Date(b.getAttribute('data-date')) - new Date(a.getAttribute('data-date'));
-                default:
-                    return 0;
-            }
-        };
-
-        // Sort grid items
-        gridItems.sort(sortFunction);
-        gridItems.forEach(item => gridContainer.appendChild(item));
-
-        // Sort list items
-        listItems.sort(sortFunction);
-        const tbody = listContainer.querySelector('tbody');
-        listItems.forEach(item => tbody.appendChild(item));
-    });
-
-    // View toggle
-    gridView.addEventListener('click', function() {
-        gridContainer.classList.remove('d-none');
-        listContainer.classList.add('d-none');
-        this.classList.add('active');
-        listView.classList.remove('active');
-    });
-
-    listView.addEventListener('click', function() {
-        listContainer.classList.remove('d-none');
-        gridContainer.classList.add('d-none');
-        this.classList.add('active');
-        gridView.classList.remove('active');
-    });
-
-    // Delete function
-    function deleteCategory(categoryId, categoryName) {
-        document.getElementById('categoryName').textContent = categoryName;
-        document.getElementById('deleteForm').action = '/Categories/Delete/' + categoryId;
-
-        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
-    }
-</script>
+        // Auto hide alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+}
