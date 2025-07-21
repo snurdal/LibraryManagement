@@ -1,0 +1,279 @@
+﻿<!-- Books/Edit.cshtml -->
+@model UI.Web.Models.Book.BookEditViewModel
+@{
+    ViewData["Title"] = "Edit Book";
+}
+
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/Home/Index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/Books/Index">Books</a></li>
+            <li class="breadcrumb-item"><a href="/Books/Details/@Model.Book.Id">@Model.Book.Title</a></li>
+            <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-book-open me-2"></i>Edit Book</h2>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        <input asp-for="Book.Id" type="hidden" />
+
+                        <div class="mb-3">
+                            <label asp-for="Book.Title" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input asp-for="Book.Title" class="form-control" placeholder="Enter book title" maxlength="200">
+                            <span asp-validation-for="Book.Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Book.AuthorId" class="form-label">Author <span class="text-danger">*</span></label>
+                                <select asp-for="Book.AuthorId" class="form-select">
+                                    <option value="">Select an author</option>
+                                    @foreach (var author in Model.Authors)
+                                    {
+                                        <option value="@author.Id">@author.FullName</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Book.AuthorId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Book.CategoryId" class="form-label">Category <span class="text-danger">*</span></label>
+                                <select asp-for="Book.CategoryId" class="form-select">
+                                    <option value="">Select a category</option>
+                                    @foreach (var category in Model.Categories)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Book.CategoryId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Book.PublishYear" class="form-label">Publish Year <span class="text-danger">*</span></label>
+                            <input asp-for="Book.PublishYear" type="number" class="form-control" placeholder="Enter publish year" min="1000" max="@DateTime.Now.Year">
+                            <span asp-validation-for="Book.PublishYear" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Book.ShortContent" class="form-label">Short Content <span class="text-danger">*</span></label>
+                            <textarea asp-for="Book.ShortContent" class="form-control" rows="3" placeholder="Enter a brief summary of the book" maxlength="500"></textarea>
+                            <div class="form-text">
+                                <span id="shortContentCharCount">0</span>/500 characters
+                            </div>
+                            <span asp-validation-for="Book.ShortContent" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Book.Description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea asp-for="Book.Description" class="form-control" rows="6" placeholder="Enter detailed description of the book" maxlength="2000"></textarea>
+                            <div class="form-text">
+                                <span id="descriptionCharCount">0</span>/2000 characters
+                            </div>
+                            <span asp-validation-for="Book.Description" class="text-danger"></span>
+                        </div>
+
+                        <input asp-for="Book.CoverImagePath" type="hidden" />
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="/Books/Details/@Model.Book.Id" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-image me-2"></i>Cover Image</h5>
+                </div>
+                <div class="card-body">
+                    <div class="current-cover-container mb-3">
+                        @if (!string.IsNullOrEmpty(Model.Book.CoverImagePath))
+                        {
+                            <div class="current-cover text-center">
+                                <img src="@Model.Book.CoverImagePath" alt="Current cover" class="img-thumbnail" style="max-width: 100%; max-height: 300px; object-fit: cover;">
+                                <div class="mt-2">
+                                    <small class="text-muted">Current cover image</small>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="no-cover text-center">
+                                <div class="placeholder-cover">
+                                    <i class="fas fa-book fa-4x text-muted"></i>
+                                    <p class="text-muted mt-3">No cover image uploaded</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Upload New Cover Image</label>
+                        <input type="file" class="form-control" accept="image/*" id="coverImageFile">
+                        <div class="form-text">
+                            Choose a new cover image to replace the current one. Supported formats: JPG, PNG, GIF (Max 5MB)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Tips</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="fas fa-lightbulb text-warning me-2"></i>Keep the title clear and descriptive</li>
+                        <li class="mb-2"><i class="fas fa-lightbulb text-warning me-2"></i>Short content should be a compelling summary</li>
+                        <li class="mb-2"><i class="fas fa-lightbulb text-warning me-2"></i>Description can include plot details and reviews</li>
+                        <li><i class="fas fa-lightbulb text-warning me-2"></i>High-quality cover images attract more readers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .placeholder-cover {
+        width: 100%;
+        min-height: 200px;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        padding: 2rem;
+    }
+
+    .current-cover img {
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .text-danger {
+        font-size: 0.875em;
+    }
+
+    .form-select:focus,
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+</style>
+
+<script>
+    // Auto hide alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
+
+    // Short Content character counter
+    const shortContentTextarea = document.querySelector('textarea[name="Book.ShortContent"]');
+    const shortContentCounter = document.getElementById('shortContentCharCount');
+
+    function updateShortContentCount() {
+        const currentLength = shortContentTextarea.value.length;
+        shortContentCounter.textContent = currentLength;
+
+        if (currentLength > 500) {
+            shortContentCounter.style.color = '#dc3545';
+        } else if (currentLength > 400) {
+            shortContentCounter.style.color = '#ffc107';
+        } else {
+            shortContentCounter.style.color = '#6c757d';
+        }
+    }
+
+    if (shortContentTextarea) {
+        shortContentTextarea.addEventListener('input', updateShortContentCount);
+        updateShortContentCount(); // Initial count
+    }
+
+    // Description character counter
+    const descriptionTextarea = document.querySelector('textarea[name="Book.Description"]');
+    const descriptionCounter = document.getElementById('descriptionCharCount');
+
+    function updateDescriptionCount() {
+        const currentLength = descriptionTextarea.value.length;
+        descriptionCounter.textContent = currentLength;
+
+        if (currentLength > 2000) {
+            descriptionCounter.style.color = '#dc3545';
+        } else if (currentLength > 1600) {
+            descriptionCounter.style.color = '#ffc107';
+        } else {
+            descriptionCounter.style.color = '#6c757d';
+        }
+    }
+
+    if (descriptionTextarea) {
+        descriptionTextarea.addEventListener('input', updateDescriptionCount);
+        updateDescriptionCount(); // Initial count
+    }
+
+    // Cover image preview (optional enhancement)
+    const coverImageInput = document.getElementById('coverImageFile');
+    if (coverImageInput) {
+        coverImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const currentCoverContainer = document.querySelector('.current-cover-container');
+                    if (currentCoverContainer) {
+                        currentCoverContainer.innerHTML = `
+                            <div class="current-cover text-center">
+                                <img src="${e.target.result}" alt="New cover preview" class="img-thumbnail" style="max-width: 100%; max-height: 300px; object-fit: cover;">
+                                <div class="mt-2">
+                                    <small class="text-success">New cover image preview</small>
+                                </div>
+                            </div>
+                        `;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+</script>

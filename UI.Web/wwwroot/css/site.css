@@ -20,3 +20,19 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/*
+    in order to use them in the main layout, we need to add the following lines to the _.cshtml file:
+*/
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+    }
+}

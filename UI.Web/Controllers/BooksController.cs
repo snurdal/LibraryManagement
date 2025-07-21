@@ -64,18 +64,18 @@ namespace UI.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(BookCreateViewModel viewModel, IFormFile? coverImage)
         {
-            if (!ModelState.IsValid)
-            {
-                await LoadCreateViewModelData(viewModel);
-                return View(viewModel);
-            }
-
             // Handle new category creation
             if (!string.IsNullOrEmpty(viewModel.NewCategoryName))
             {
                 var categoryResult = await _categoryService.CreateAsync(viewModel.NewCategoryName);
                 if (categoryResult.Success)
                     viewModel.Book.CategoryId = categoryResult.Data.Id;
+                else
+                {
+                    TempData["Error"] = "Category creation failed: " + categoryResult.Message;
+                    await LoadCreateViewModelData(viewModel);
+                    return View(viewModel);
+                }
             }
 
             // Handle new author creation
@@ -84,18 +84,38 @@ namespace UI.Web.Controllers
                 var authorResult = await _authorService.CreateAsync(viewModel.NewAuthorFirstName, viewModel.NewAuthorLastName);
                 if (authorResult.Success)
                     viewModel.Book.AuthorId = authorResult.Data.Id;
+                else
+                {
+                    TempData["Error"] = "Author creation failed: " + authorResult.Message;
+                    await LoadCreateViewModelData(viewModel);
+                    return View(viewModel);
+                }
+            }
+
+            // Validate that we have CategoryId and AuthorId
+            if (viewModel.Book.CategoryId <= 0)
+            {
+                TempData["Error"] = "Please select or create a category.";
+                await LoadCreateViewModelData(viewModel);
+                return View(viewModel);
+            }
+
+            if (viewModel.Book.AuthorId <= 0)
+            {
+                TempData["Error"] = "Please select or create an author.";
+                await LoadCreateViewModelData(viewModel);
+                return View(viewModel);
             }
 
             // Handle cover image upload
             if (coverImage != null && coverImage.Length > 0)
-                if (coverImage != null && coverImage.Length > 0)
+            {
+                var imagePath = await _fileUploadService.UploadFileAsync(coverImage, "bookuploads"); // to "uploads/bookuploads" folder 
+                if (!string.IsNullOrEmpty(imagePath))
                 {
-                    var imagePath = await _fileUploadService.UploadFileAsync(coverImage, "bookuploads"); // to "uploads/bookuploads" folder 
-                    if (!string.IsNullOrEmpty(imagePath))
-                    {
-                        viewModel.Book.CoverImagePath = imagePath;
-                    }
+                    viewModel.Book.CoverImagePath = imagePath;
                 }
+            }
 
             var result = await _bookService.CreateAsync(viewModel.Book);
             if (result.Success)

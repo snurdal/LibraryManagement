@@ -43,10 +43,8 @@ namespace Core.Concretes.Maps
 
             CreateMap<Book, BookDetailDTO>();
             CreateMap<Book, BookEditDTO>();
-            CreateMap<BookCreateDTO, Book>()
-                .ForMember(dest => dest.CoverImagePath, opt => opt.Ignore());
-            CreateMap<BookEditDTO, Book>()
-                .ForMember(dest => dest.CoverImagePath, opt => opt.Ignore());
+            CreateMap<BookCreateDTO, Book>();
+            CreateMap<BookEditDTO, Book>();
             #endregion
 
             #region Category Mapping

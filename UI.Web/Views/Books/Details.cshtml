@@ -1,0 +1,84 @@
+﻿<!-- Books/Details.cshtml -->
+@model UI.Web.Models.Book.BookDetailViewModel
+@{
+    ViewData["Title"] = Model.Book.Title;
+}
+
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/Home/Index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/Books/Index">Books</a></li>
+            <li class="breadcrumb-item active">@Model.Book.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                @if (!string.IsNullOrEmpty(Model.Book.CoverImagePath))
+                {
+                    <img src="~/uploads/bookuploads/@Model.Book.CoverImagePath" alt="@Model.Book.Title" class="card-img-top book-detail-cover"
+                         onerror="this.src='/images/no-book-cover.jpg'">
+                }
+                else
+                {
+                    <div class="book-detail-cover d-flex align-items-center justify-content-center bg-light">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-book fa-5x mb-3"></i>
+                            <p class="mb-0">No Cover Image</p>
+                        </div>
+                    </div>
+                }
+                <div class="card-body text-center">
+                    <div class="d-grid gap-2">
+                        <a href="/Books/Edit/@Model.Book.Id" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Edit Book
+                        </a>
+                        <button class="btn btn-outline-danger" onclick="deleteBook(@Model.Book.Id, '@Model.Book.Title')">
+                            <i class="fas fa-trash me-2"></i>Delete Book
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title mb-0">@Model.Book.Title</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>Author:</strong></div>
+                        <div class="col-sm-9">@Model.Book.Author.FirstName @Model.Book.Author.LastName</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>Category:</strong></div>
+                        <div class="col-sm-9">
+                            <span class="badge bg-primary">@Model.Book.Category.Name</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>Publish Year:</strong></div>
+                        <div class="col-sm-9">@Model.Book.PublishYear</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>Added Date:</strong></div>
+                        <div class="col-sm-9">@Model.Book.CreateDate.ToString("MMMM dd, yyyy")</div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Book.Description))
+                    {
+                        <hr>
+                        <h5>Description</h5>
+                        <p class="book-description">@Model.Book.Description</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

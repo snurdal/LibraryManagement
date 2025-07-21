@@ -13,8 +13,8 @@ namespace Core.Concretes.DTOs.Book
         public string ShortContent { get; set; } = null!;
         public string Description { get; set; } = null!;
         public string? CoverImagePath { get; set; }
-        public int CategoryId { get; set; }
-        public int AuthorId { get; set; }
+        public int? CategoryId { get; set; }
+        public int? AuthorId { get; set; }
     }
 
 }

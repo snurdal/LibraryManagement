@@ -1,0 +1,162 @@
+﻿<!-- Books/Create.cshtml -->
+@model UI.Web.Models.Book.BookCreateViewModel
+@{
+    ViewData["Title"] = "Add New Book";
+}
+
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/Home/Index">Home</a></li>
+            <li class="breadcrumb-item"><a href="/Books/Index">Books</a></li>
+            <li class="breadcrumb-item active">Add New Book</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Add New Book
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Book.Title" class="form-label">Book Title *</label>
+                                    <input asp-for="Book.Title" class="form-control" placeholder="Enter book title">
+                                    <span asp-validation-for="Book.Title" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Book.PublishYear" class="form-label">Publish Year *</label>
+                                    <input asp-for="Book.PublishYear" type="number" class="form-control" min="1800" max="@DateTime.Now.Year" placeholder="@DateTime.Now.Year">
+                                    <span asp-validation-for="Book.PublishYear" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Book.CategoryId" class="form-label">Category *</label>
+                                    <select asp-for="Book.CategoryId" class="form-select" id="categorySelect">
+                                        <option value="0">Select a category</option>
+                                        @if (Model.Categories != null)
+                                        {
+                                            @foreach (var category in Model.Categories)
+                                            {
+                                                <option value="@category.Id">@category.Name</option>
+                                            }
+                                        }
+                                        <option value="new">+ Create New Category</option>
+                                    </select>
+                                    <span asp-validation-for="Book.CategoryId" class="text-danger"></span>
+
+                                    <div id="newCategoryDiv" class="mt-2" style="display:none;">
+                                        <input asp-for="NewCategoryName" class="form-control" placeholder="Enter new category name">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Book.AuthorId" class="form-label">Author *</label>
+                                    <select asp-for="Book.AuthorId" class="form-select" id="authorSelect">
+                                        <option value="0">Select an author</option>
+                                        @if (Model.Authors != null)
+                                        {
+                                            @foreach (var author in Model.Authors)
+                                            {
+                                                <option value="@author.Id">@author.FullName</option>
+                                            }
+                                        }
+                                        <option value="new">+ Create New Author</option>
+                                    </select>
+                                    <span asp-validation-for="Book.AuthorId" class="text-danger"></span>
+
+                                    <div id="newAuthorDiv" class="mt-2" style="display:none;">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <input asp-for="NewAuthorFirstName" class="form-control" placeholder="Author first name">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input asp-for="NewAuthorLastName" class="form-control" placeholder="Author last name">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Book.ShortContent" class="form-label">Short Content</label>
+                            <textarea asp-for="Book.ShortContent" class="form-control" rows="3" placeholder="Brief description of the book (optional)..."></textarea>
+                            <span asp-validation-for="Book.ShortContent" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Book.Description" class="form-label">Description</label>
+                            <textarea asp-for="Book.Description" class="form-control" rows="5" placeholder="Detailed description of the book (optional)..."></textarea>
+                            <span asp-validation-for="Book.Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Cover Image</label>
+                            <input type="file" class="form-control" name="coverImage" accept="image/*">
+                            <div class="form-text">Supported formats: JPG, PNG, GIF (Max size: 5MB)</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/Books/Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Book
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+                $('#categorySelect').change(function() {
+            if ($(this).val() === 'new') {
+                $('#newCategoryDiv').show();
+                $('input[name="NewCategoryName"]').attr('required', true);
+                // CategoryId'yi temizleme, -1 yap
+                $(this).val('-1');
+            } else {
+                $('#newCategoryDiv').hide();
+                $('input[name="NewCategoryName"]').attr('required', false);
+            }
+        });
+
+        // Author select handler
+        $('#authorSelect').change(function() {
+            if ($(this).val() === 'new') {
+                $('#newAuthorDiv').show();
+                $('input[name="NewAuthorFirstName"]').attr('required', true);
+                $('input[name="NewAuthorLastName"]').attr('required', true);
+                // AuthorId'yi temizleme, -1 yap
+                $(this).val('-1');
+            } else {
+                $('#newAuthorDiv').hide();
+                $('input[name="NewAuthorFirstName"]').attr('required', false);
+                $('input[name="NewAuthorLastName"]').attr('required', false);
+            }
+        });
+
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

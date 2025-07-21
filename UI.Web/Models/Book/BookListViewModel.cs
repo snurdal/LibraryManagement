@@ -1,6 +1,6 @@
 ﻿namespace UI.Web.Models.Book
 {
-    public class BookViewModel
+    public class BookListViewModel
     {
         public int Id { get; set; }
         public string Title { get; set; } = null!;
