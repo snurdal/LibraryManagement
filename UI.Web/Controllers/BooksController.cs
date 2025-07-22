@@ -62,7 +62,7 @@ namespace UI.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(BookCreateViewModel viewModel, IFormFile? coverImage)
+        public async Task<IActionResult> Create(BookCreateViewModel viewModel, IFormFile? PhotoFile)
         {
             // Handle new category creation
             if (!string.IsNullOrEmpty(viewModel.NewCategoryName))
@@ -108,9 +108,19 @@ namespace UI.Web.Controllers
             }
 
             // Handle cover image upload
-            if (coverImage != null && coverImage.Length > 0)
+            if (PhotoFile != null && PhotoFile.Length > 0)
             {
-                var imagePath = await _fileUploadService.UploadFileAsync(coverImage, "bookuploads"); // to "uploads/bookuploads" folder 
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var extension = Path.GetExtension(PhotoFile.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("PhotoFile", "Invalid file format. Only JPG, JPEG, PNG, or GIF files are allowed.");
+                    await LoadCreateViewModelData(viewModel);
+                    return View(viewModel);
+                }
+
+                var imagePath = await _fileUploadService.UploadFileAsync(PhotoFile, "bookuploads");
                 if (!string.IsNullOrEmpty(imagePath))
                 {
                     viewModel.Book.CoverImagePath = imagePath;
@@ -156,7 +166,7 @@ namespace UI.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(BookEditViewModel viewModel, IFormFile? coverImage)
+        public async Task<IActionResult> Edit(BookEditViewModel viewModel, IFormFile? PhotoFile)
         {
             if (!ModelState.IsValid)
             {
@@ -165,9 +175,19 @@ namespace UI.Web.Controllers
             }
 
             // Handle cover image upload
-            if (coverImage != null && coverImage.Length > 0)
+            if (PhotoFile != null && PhotoFile.Length > 0)
             {
-                var imagePath = await _fileUploadService.UploadFileAsync(coverImage, "bookuploads");
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var extension = Path.GetExtension(PhotoFile.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("PhotoFile", "Invalid file format. Only JPG, JPEG, PNG, or GIF files are allowed.");
+                    await LoadEditViewModelData(viewModel);
+                    return View(viewModel);
+                }
+
+                var imagePath = await _fileUploadService.UploadFileAsync(PhotoFile, "bookuploads");
                 if (!string.IsNullOrEmpty(imagePath))
                 {
                     // Delete old image if exists

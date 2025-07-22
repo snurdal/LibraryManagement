@@ -8,7 +8,6 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/Home/Index">Home</a></li>
-            <li class="breadcrumb-item"><a href="/Books/Index">Books</a></li>
             <li class="breadcrumb-item active">Add New Book</li>
         </ol>
     </nav>
@@ -93,25 +92,22 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Book.ShortContent" class="form-label">Short Content</label>
-                            <textarea asp-for="Book.ShortContent" class="form-control" rows="3" placeholder="Brief description of the book (optional)..."></textarea>
-                            <span asp-validation-for="Book.ShortContent" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
                             <label asp-for="Book.Description" class="form-label">Description</label>
                             <textarea asp-for="Book.Description" class="form-control" rows="5" placeholder="Detailed description of the book (optional)..."></textarea>
                             <span asp-validation-for="Book.Description" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Cover Image</label>
-                            <input type="file" class="form-control" name="coverImage" accept="image/*">
-                            <div class="form-text">Supported formats: JPG, PNG, GIF (Max size: 5MB)</div>
+                            <label asp-for="PhotoFile" class="form-label">Upload New Cover Image</label>
+                            <input asp-for="PhotoFile" type="file" class="form-control" accept="image/*" id="coverImageFileInput" />
+                            <div class="form-text">
+                                Choose a new cover image to replace the current one. Supported formats: JPG, PNG, GIF (Max 5MB)
+                            </div>
+                            <span asp-validation-for="PhotoFile" class="text-danger"></span>
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="/Books/Index" class="btn btn-secondary">
+                            <a href="/Home/Index" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">
@@ -153,6 +149,37 @@
                 $('input[name="NewAuthorLastName"]').attr('required', false);
             }
         });
+
+                const photoInput = document.querySelector('input[name="PhotoFile"]');
+
+        if (photoInput) {
+            photoInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+
+                if (!file) return;
+
+                const fileName = file.name.toLowerCase();
+                const extension = fileName.substring(fileName.lastIndexOf('.'));
+
+                const validationSpan = document.querySelector('span[data-valmsg-for="PhotoFile"]');
+
+                if (!allowedExtensions.includes(extension)) {
+                    if (validationSpan) {
+                        validationSpan.textContent = "Unsupported file type. Please upload a JPG, JPEG, PNG, or GIF image.";
+                        validationSpan.classList.add("text-danger");
+                    }
+                    e.target.value = "";
+                    return;
+                } else {
+                    if (validationSpan) {
+                        validationSpan.textContent = "";
+                        validationSpan.classList.remove("text-danger");
+                    }
+                }
+            });
+        }
+
 
     </script>
 

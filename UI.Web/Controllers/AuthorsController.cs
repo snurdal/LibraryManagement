@@ -62,41 +62,46 @@ namespace UI.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(AuthorEditViewModel viewModel)
+        public async Task<IActionResult> Edit(AuthorEditViewModel viewModel, IFormFile? photoFile)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                // Handle photo upload
-                if (viewModel.PhotoFile != null)
-                {
-                    var photoPath = await _fileUploadService.UploadFileAsync(viewModel.PhotoFile, "authors");
-                    if (!string.IsNullOrEmpty(photoPath))
-                    {
-                        // Delete old photo if exists
-                        if (!string.IsNullOrEmpty(viewModel.Author.PhotoPath))
-                            _fileUploadService.DeleteFile(viewModel.Author.PhotoPath);
-
-                        viewModel.Author.PhotoPath = photoPath;
-                    }
-                }
-
-                var result = await _authorService.UpdateAsync(viewModel.Author);
-                if (result.Success)
-                {
-                    TempData["Success"] = result.Message;
-                    return RedirectToAction("Details", new { id = viewModel.Author.Id });
-                }
-
-                TempData["Error"] = result.Message;
                 return View(viewModel);
             }
-            catch (InvalidOperationException ex)
+
+            // Handle photo upload
+            if (photoFile != null && photoFile.Length > 0)
             {
-                TempData["Error"] = ex.Message;
-                return View(viewModel);
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var extension = Path.GetExtension(photoFile.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("photoFile", "Unsupported file type. Please upload a JPG, JPEG, PNG, or GIF image.");
+                    return View(viewModel);
+                }
+
+                var photoPath = await _fileUploadService.UploadFileAsync(photoFile, "authoruploads");
+                if (!string.IsNullOrEmpty(photoPath))
+                {
+                    // Delete old photo if exists
+                    if (!string.IsNullOrEmpty(viewModel.Author.PhotoPath))
+                        _fileUploadService.DeleteFile(viewModel.Author.PhotoPath);
+
+                    viewModel.Author.PhotoPath = photoPath;
+                }
             }
+
+            var result = await _authorService.UpdateAsync(viewModel.Author);
+            if (result.Success)
+            {
+                TempData["Success"] = result.Message;
+                return RedirectToAction("Details", new { id = viewModel.Author.Id });
+            }
+
+            TempData["Error"] = result.Message;
+            return View(viewModel);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)

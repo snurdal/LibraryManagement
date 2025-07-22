@@ -9,6 +9,7 @@
         public string? CoverImagePath { get; set; }
         public string CategoryName { get; set; } = null!;
         public string AuthorFullName { get; set; } = null!;
+        public int AuthorId { get; set; }
         public DateTime CreateDate { get; set; }
     }
 

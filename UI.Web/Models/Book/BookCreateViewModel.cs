@@ -14,5 +14,6 @@ namespace UI.Web.Models.Book
         public string? NewCategoryName { get; set; }
         public string? NewAuthorFirstName { get; set; }
         public string? NewAuthorLastName { get; set; }
+        public IFormFile? PhotoFile { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿<!-- Books/Details.cshtml -->
+
 @model UI.Web.Models.Book.BookDetailViewModel
 @{
     ViewData["Title"] = Model.Book.Title;
@@ -8,40 +9,24 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/Home/Index">Home</a></li>
-            <li class="breadcrumb-item"><a href="/Books/Index">Books</a></li>
             <li class="breadcrumb-item active">@Model.Book.Title</li>
         </ol>
     </nav>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
     <div class="row">
         <div class="col-md-4">
             <div class="card shadow-sm">
+                <!-- Photo Uplaad -->
                 @if (!string.IsNullOrEmpty(Model.Book.CoverImagePath))
                 {
-                    <img src="~/uploads/bookuploads/@Model.Book.CoverImagePath" alt="@Model.Book.Title" class="card-img-top book-detail-cover"
+                    <img src="~/@Model.Book.CoverImagePath" alt="@Model.Book.Title" class="book-image"
                          onerror="this.src='/images/no-book-cover.jpg'">
                 }
                 else
                 {
-                    <div class="book-detail-cover d-flex align-items-center justify-content-center bg-light">
+                    <div class="book-image d-flex align-items-center justify-content-center bg-light">
                         <div class="text-center text-muted">
-                            <i class="fas fa-book fa-5x mb-3"></i>
+                            <i class="fas fa-book fa-3x mb-2"></i>
                             <p class="mb-0">No Cover Image</p>
                         </div>
                     </div>
@@ -88,9 +73,12 @@
                     </div>
                     @if (!string.IsNullOrEmpty(Model.Book.Description))
                     {
-                        <hr>
-                        <h5><i class="fas fa-align-left me-2 text-primary"></i>Description</h5>
-                        <p class="book-description lh-lg">@Model.Book.Description</p>
+                        <div class="row mb-3">
+                            <div class="col-sm-3"><strong>Description:</strong></div>
+                            <div class="col-sm-9 text-muted small">
+                                @Model.Book.Description
+                            </div>
+                        </div>
                     }
                 </div>
             </div>

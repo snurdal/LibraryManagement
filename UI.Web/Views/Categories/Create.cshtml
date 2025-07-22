@@ -4,210 +4,70 @@
     ViewData["Title"] = "Create Category";
 }
 
-<div class="container-fluid">
+<div class="container mt-4">
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/Home/Index">Home</a></li>
             <li class="breadcrumb-item"><a href="/Categories/Index">Categories</a></li>
-            <li class="breadcrumb-item active">Create</li>
+            <li class="breadcrumb-item active" aria-current="page">Create Category</li>
         </ol>
     </nav>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-plus-circle me-2"></i>Create New Category</h2>
-        <a href="/Categories/Index" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i>Back to Categories
-        </a>
-    </div>
+    <h2 class="mb-4"><i class="fas fa-plus-circle me-2"></i>Create New Category</h2>
 
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-tag me-2"></i>Category Information
-                    </h5>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Create" method="post" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label asp-for="Category.Name" class="form-label">
+                        <i class="fas fa-tag me-1"></i>Category Name
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="Category.Name"
+                           class="form-control"
+                           placeholder="Enter category name..."
+                           maxlength="100"
+                           required />
+                    <span class="text-danger" asp-validation-for="Category.Name"></span>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Create" method="post" id="createForm">
-                        @Html.AntiForgeryToken()
 
-                        <div class="mb-3">
-                            <label asp-for="Category.Name" class="form-label">
-                                <i class="fas fa-tag me-1"></i>Category Name
-                                <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="Category.Name"
-                                   class="form-control"
-                                   placeholder="Enter category name..."
-                                   maxlength="100" />
-                            <span asp-validation-for="Category.Name" class="text-danger"></span>
-                            <div class="form-text">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Category name must be between 1 and 100 characters.
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="/Categories/Index" class="btn btn-secondary me-md-2">
-                                <i class="fas fa-times me-2"></i>Cancel
-                            </a>
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-save me-2"></i>Create Category
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save me-2"></i>Create Category
+                </button>
+                <a href="/Categories/Index" class="btn btn-secondary ms-2">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </form>
         </div>
     </div>
 </div>
 
-<style>
-    .card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    }
-
-    .card-header {
-        border-radius: 15px 15px 0 0 !important;
-        border: none;
-        padding: 1.25rem 1.5rem;
-        
-    }
-
-    .card-header.bg-dark{
-       background-color: rgba(0, 123, 255, 0.1);
-    }
-
-    .card-body {
-        padding: 1.5rem;
-    }
-
-    .form-control {
-        border-radius: 10px;
-        border: 2px solid #e9ecef;
-        padding: 0.75rem 1rem;
-        transition: all 0.3s ease;
-    }
-
-        .form-control:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-        }
-
-    .btn {
-        border-radius: 8px;
-        padding: 0.75rem 1.5rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-        .btn:hover {
-            transform: translateY(-1px);
-        }
-
-    .breadcrumb {
-        background: none;
-        padding: 0;
-    }
-
-    .breadcrumb-item a {
-        color: #6c757d;
-        text-decoration: none;
-    }
-
-        .breadcrumb-item a:hover {
-            color: #0d6efd;
-        }
-
-    .form-label {
-        font-weight: 600;
-        color: #495057;
-        margin-bottom: 0.5rem;
-    }
-
-    .text-danger {
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-
-    .form-text {
-        font-size: 0.875rem;
-        color: #6c757d;
-        margin-top: 0.5rem;
-    }
-
-    /* Loading state for form submission */
-    .btn-loading {
-        position: relative;
-        color: transparent !important;
-    }
-
-        .btn-loading::after {
-            content: "";
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            top: 50%;
-            left: 50%;
-            margin-left: -8px;
-            margin-top: -8px;
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s ease-in-out infinite;
-        }
-</style>
-
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
+    <partial name="_ValidationScriptsPartial" />
     <script>
-        $(document).ready(function() {
-            // Form validation enhancement
-            $('#createForm').on('submit', function(e) {
-                var submitBtn = $(this).find('button[type="submit"]');
+        // Bootstrap 5 validation
+        (() => {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
 
-                // Add loading state
-                submitBtn.addClass('btn-loading').prop('disabled', true);
-
-                // If validation fails, remove loading state
-                if (!$(this)[0].checkValidity()) {
-                    setTimeout(function() {
-                        submitBtn.removeClass('btn-loading').prop('disabled', false);
-                    }, 100);
-                }
-            });
-
-            // Auto-focus on category name input
-            $('#Category_Name').focus();
-
-            // Character counter for category name
-            $('#Category_Name').on('input', function() {
-                var current = $(this).val().length;
-                var max = 100;
-                var remaining = max - current;
-
-                var counterText = remaining + ' characters remaining';
-                if (remaining < 20) {
-                    counterText = '<span class="text-warning">' + counterText + '</span>';
-                }
-                if (remaining < 0) {
-                    counterText = '<span class="text-danger">Character limit exceeded!</span>';
-                }
-
-                // Update or create character counter
-                var counter = $(this).siblings('.character-counter');
-                if (counter.length === 0) {
-                    $(this).after('<div class="form-text character-counter">' + counterText + '</div>');
-                } else {
-                    counter.html(counterText);
-                }
-            });
+        // Auto-focus on category name input
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryInput = document.querySelector('#Category_Name');
+            if (categoryInput) {
+                categoryInput.focus();
+            }
         });
     </script>
 }

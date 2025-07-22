@@ -2,280 +2,308 @@
 @using Utilities.Extensions
 @model UI.Web.Models.Author.AuthorDetailViewModel
 @{
-    ViewData["Title"] = "Author Details";
+	ViewData["Title"] = "Author Details";
 }
 
 <div class="container-fluid">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/Home/Index">Home</a></li>
-            <li class="breadcrumb-item"><a href="/Authors/Index">Authors</a></li>
-            <li class="breadcrumb-item active">@Model.Author.FullName</li>
-        </ol>
-    </nav>
+	<nav aria-label="breadcrumb" class="mb-4">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/Home/Index">Home</a></li>
+			<li class="breadcrumb-item"><a href="/Authors/Index">Authors</a></li>
+			<li class="breadcrumb-item active">@Model.Author.FullName</li>
+		</ol>
+	</nav>
 
-    @if (ViewData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>@ViewData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
+	@if (ViewData["Success"] != null)
+	{
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+			<i class="fas fa-check-circle me-2"></i>@ViewData["Success"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		</div>
+	}
 
-    @if (ViewData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>@ViewData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
+	@if (TempData["Success"] != null)
+	{
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+			<i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		</div>
+	}
 
-    <div class="row">
-        <!-- Author Profile Card -->
-        <div class="col-lg-4 col-md-5 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <!-- Author Avatar -->
-                    <div class="author-avatar mb-4">
-                        @if (!string.IsNullOrEmpty(Model.Author.PhotoPath))
-                        {
-                            <img src="@Model.Author.PhotoPath" alt="@Model.Author.FullName" class="rounded-circle img-fluid">
-                        }
-                        else
-                        {
-                            <div class="avatar-placeholder">
-                                <i class="fas fa-user fa-4x"></i>
-                            </div>
-                        }
-                    </div>
+	@if (ViewData["Error"] != null)
+	{
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+			<i class="fas fa-exclamation-triangle me-2"></i>@ViewData["Error"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		</div>
+	}
 
-                    <!-- Author Name -->
-                    <h3 class="mb-3 text-dark">@Model.Author.FullName</h3>
+	@if (TempData["Error"] != null)
+	{
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+			<i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		</div>
+	}
 
-                    <!-- Book Count Badge -->
-                    <div class="mb-4">
-                        <span class="badge bg-primary fs-6 px-3 py-2">
-                            <i class="fas fa-book me-2"></i>@Model.Author.Books.Count Books
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+	<div class="row">
+		<!-- Author Profile Card -->
+		<div class="col-lg-4 col-md-5 mb-4">
+			<div class="card shadow-sm h-100">
+				<div class="card-body text-center">
+					<!-- Author Avatar -->
+					<div class="author-avatar mb-4">
+						@if (!string.IsNullOrEmpty(Model.Author.PhotoPath))
+						{
+							<img src="~/@Model.Author.PhotoPath" alt="@($"{Model.Author.FirstName} {Model.Author.LastName}")" class="img-thumbnail author-photo"
+								 onerror="this.src='/images/no-author-photo.jpg'">
+						}
+						else
+						{
+							<div class="author-photo d-flex align-items-center justify-content-center bg-light">
+								<div class="text-center text-muted">
+									<i class="fas fa-user fa-3x mb-2"></i>
+									<p class="mb-0">No Cover Image</p>
+								</div>
+							</div>
+						}
+					</div>
 
-        <!-- Author Details -->
-        <div class="col-lg-8 col-md-7">
-            <!-- Biography Card -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0 text-dark">
-                        <i class="fas fa-info-circle me-2 text-primary"></i>Biography
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @if (!string.IsNullOrEmpty(Model.Author.Biography))
-                    {
-                        <p class="text-muted mb-0 lh-lg">@Model.Author.Biography</p>
-                    }
-                    else
-                    {
-                        <div class="text-center py-3">
-                            <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
-                            <p class="text-muted mb-0"><em>No biography available for this author.</em></p>
-                        </div>
-                    }
-                </div>
-            </div>
+					<!-- Author Name -->
+					<h3 class="mb-3 text-dark">@Model.Author.FullName</h3>
 
-            <!-- Books Card -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 text-dark">
-                        <i class="fas fa-book me-2 text-primary"></i>Books (@Model.Author.Books.Count)
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @if (Model.Author.Books.Any())
-                    {
-                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                            @foreach (var book in Model.Author.Books)
-                            {
-                                <div class="col">
-                                    <div class="card h-100 book-card border-0 shadow-sm">
-                                        <!-- Book Cover -->
-                                        @if (!string.IsNullOrEmpty(book.CoverImagePath))
-                                        {
-                                            <img src="@book.CoverImagePath" class="card-img-top book-cover" alt="@book.Title">
-                                        }
-                                        else
-                                        {
-                                            <div class="book-cover-placeholder">
-                                                <i class="fas fa-book-open fa-2x"></i>
-                                            </div>
-                                        }
+					<!-- Book Count Badge -->
+					<div class="mb-4">
+						<span class="badge bg-primary fs-6 px-3 py-2">
+							<i class="fas fa-book me-2"></i>@Model.Author.Books.Count Books
+						</span>
+					</div>
 
-                                        <!-- Book Info -->
-                                        <div class="card-body d-flex flex-column">
-                                            <h6 class="card-title fw-bold text-dark mb-2">@book.Title</h6>
-                                            @if (!string.IsNullOrEmpty(book.ShortDescription))
-                                            {
-                                                <p class="card-text text-muted small flex-grow-1">
-                                                    @book.ShortDescription.Truncate(100)
-                                                </p>
-                                            }
-                                        </div>
+					<!-- Action Buttons -->
+					<div class="d-flex gap-2 justify-content-center">
+						<a href="/Authors/Edit/@Model.Author.Id" class="btn btn-success btn-lg">
+							<i class="fas fa-edit me-2"></i>Edit Author
+						</a>
+						<a href="/Authors/Index" class="btn btn-secondary btn-lg">
+							<i class="fas fa-arrow-left me-2"></i>Back to List
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
 
-                                        <!-- Book Footer -->
-                                        <div class="card-footer bg-transparent border-0 pt-0">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted">
-                                                    <i class="fas fa-calendar me-1"></i>@book.PublishYear
-                                                </small>
-                                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-eye me-1"></i>View
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-5">
-                            <i class="fas fa-book-open fa-4x text-muted mb-3"></i>
-                            <h5 class="text-muted mb-2">No Books Available</h5>
-                            <p class="text-muted">This author has no books in the library yet.</p>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
+		<!-- Author Details -->
+		<div class="col-lg-8 col-md-7">
+			<!-- Biography Card -->
+			<div class="card shadow-sm mb-4">
+				<div class="card-header bg-light">
+					<h5 class="mb-0 text-dark">
+						<i class="fas fa-info-circle me-2 text-primary"></i>Biography
+					</h5>
+				</div>
+				<div class="card-body">
+					@if (!string.IsNullOrEmpty(Model.Author.Biography))
+					{
+						<p class="text-muted lh-lg">@Model.Author.Biography</p>
+					}
+					else
+					{
+						<div class="text-center py-4">
+							<i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+							<h6 class="text-muted mb-2">No Biography Available</h6>
+							<p class="text-muted mb-0">Biography information has not been added for this author yet.</p>
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- Books Card -->
+			<div class="card shadow-sm">
+				<div class="card-header bg-light d-flex justify-content-between align-items-center">
+					<h5 class="mb-0 text-dark">
+						<i class="fas fa-book me-2 text-primary"></i>Books (@Model.Author.Books.Count)
+					</h5>
+				</div>
+				<div class="card-body">
+					@if (Model.Author.Books.Any())
+					{
+						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+							@foreach (var book in Model.Author.Books)
+							{
+								<div class="col">
+									<div class="card h-100 book-card border-0 shadow-sm">
+										<!-- Book Cover -->
+										@if (!string.IsNullOrEmpty(book.CoverImagePath))
+										{
+											<img src="~/@book.CoverImagePath" alt="@book.Title" class="book-image"
+												 onerror="this.src='/images/no-book-cover.jpg'">
+										}
+										else
+										{
+											<div class="book-image d-flex align-items-center justify-content-center bg-light">
+												<div class="text-center text-muted">
+													<i class="fas fa-book fa-3x mb-2"></i>
+													<p class="mb-0">No Cover Image</p>
+												</div>
+											</div>
+										}
+
+										<!-- Book Info -->
+										<div class="card-body d-flex flex-column">
+											<h6 class="card-title fw-bold text-dark mb-2">@book.Title</h6>
+											@if (!string.IsNullOrEmpty(book.ShortDescription))
+											{
+												<p class="book-description">@book.ShortDescription</p>
+											}
+										</div>
+
+										<!-- Book Footer -->
+										<div class="card-footer bg-transparent border-0 pt-0">
+											<div class="d-flex justify-content-between align-items-center">
+												<small class="text-muted">
+													<i class="fas fa-calendar me-1"></i>@book.PublishYear
+												</small>
+												<a href="/Books/Details/@book.Id" class="btn btn-sm btn-primary">
+													<i class="fas fa-eye me-1"></i>View
+												</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					}
+					else
+					{
+						<div class="text-center py-5">
+							<i class="fas fa-book-open fa-4x text-muted mb-3"></i>
+							<h5 class="text-muted mb-2">No Books Available</h5>
+							<p class="text-muted">This author has no books in the library yet.</p>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <style>
-    /* Author Avatar Styles */
-    .author-avatar {
-        width: 140px;
-        height: 140px;
-        margin: 0 auto;
-        position: relative;
-    }
+	/* Author Avatar Styles */
+	.author-photo {
+    width: 400px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    margin: 0 auto 15px auto;
+    display: block;
+}
 
-        .author-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border: 4px solid #fff;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
+	.avatar-placeholder {
+		width: 140px;
+		height: 140px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		margin: 0 auto;
+		box-shadow: 0 0 20px rgba(0,0,0,0.1);
+	}
 
-    .avatar-placeholder {
-        width: 140px;
-        height: 140px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        margin: 0 auto;
-        box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    }
+	/* Card Enhancements */
+	.card {
+		border: none;
+		transition: all 0.3s ease;
+	}
 
-    /* Card Enhancements */
-    .card {
-        border: none;
-        transition: all 0.3s ease;
-    }
+		.card.shadow-sm {
+			box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+		}
 
-        .card.shadow-sm {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-        }
+		.card:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+		}
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-        }
+	/* Book Card Styles */
+	.book-card {
+		transition: all 0.3s ease;
+		overflow: hidden;
+	}
 
-    /* Book Card Styles */
-    .book-card {
-        transition: all 0.3s ease;
-        overflow: hidden;
-    }
+		.book-card:hover {
+			transform: translateY(-8px);
+			box-shadow: 0 1rem 2rem rgba(0,0,0,0.15) !important;
+		}
 
-        .book-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 1rem 2rem rgba(0,0,0,0.15) !important;
-        }
+	.book-cover {
+		height: 220px;
+		object-fit: cover;
+		transition: transform 0.3s ease;
+	}
 
-    .book-cover {
-        height: 220px;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
+	.book-card:hover .book-cover {
+		transform: scale(1.05);
+	}
 
-    .book-card:hover .book-cover {
-        transform: scale(1.05);
-    }
+	.book-cover-placeholder {
+		height: 220px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+		color: #6c757d;
+		transition: all 0.3s ease;
+	}
 
-    .book-cover-placeholder {
-        height: 220px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        color: #6c757d;
-        transition: all 0.3s ease;
-    }
+	.book-card:hover .book-cover-placeholder {
+		background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+	}
 
-    .book-card:hover .book-cover-placeholder {
-        background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-    }
+	/* Button Enhancements */
+	.btn {
+		border-radius: 8px;
+		font-weight: 500;
+		transition: all 0.3s ease;
+	}
 
-    /* Button Enhancements */
-    .btn {
-        border-radius: 8px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
+	.btn-lg {
+		padding: 12px 24px;
+		font-size: 1rem;
+	}
 
-    .btn-lg {
-        padding: 12px 24px;
-        font-size: 1rem;
-    }
+	.btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+	}
 
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
+	/* Badge Enhancements */
+	.badge {
+		border-radius: 20px;
+		font-weight: 500;
+	}
 
-    /* Badge Enhancements */
-    .badge {
-        border-radius: 20px;
-        font-weight: 500;
-    }
+	/* Alert Auto-hide Animation */
+	.alert {
+		border: none;
+		border-radius: 10px;
+	}
 
-    /* Alert Auto-hide Animation */
-    .alert {
-        border: none;
-        border-radius: 10px;
-    }
-
-    /* Typography */
-    .lh-lg {
-        line-height: 1.8;
-    }
+	/* Typography */
+	.lh-lg {
+		line-height: 1.8;
+	}
 </style>
 
 @section Scripts {
-    <script>
-        // Auto hide alerts after 5 seconds
-        $(document).ready(function() {
-            setTimeout(function() {
-                $('.alert').fadeOut('slow');
-            }, 5000);
-        });
-    </script>
+	<script>
+		// Auto hide alerts after 5 seconds
+		$(document).ready(function() {
+			setTimeout(function() {
+				$('.alert').fadeOut('slow');
+			}, 5000);
+		});
+	</script>
 }

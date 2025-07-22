@@ -18,35 +18,27 @@
         <h2><i class="fas fa-user-edit me-2"></i>Edit Author</h2>
     </div>
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
     <div class="row">
         <div class="col-lg-8 mx-auto">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <form asp-action="Edit" method="post" enctype="multipart/form-data">
                         <input asp-for="Author.Id" type="hidden" />
 
-                        <div class="row mb-3">
+                        <div class="row mb-4">
                             <div class="col-md-6">
                                 <label asp-for="Author.FirstName" class="form-label">First Name <span class="text-danger">*</span></label>
-                                <input asp-for="Author.FirstName" class="form-control" placeholder="Enter first name" maxlength="50">
+                                <input asp-for="Author.FirstName" class="form-control" placeholder="Enter first name" maxlength="50" />
                                 <span asp-validation-for="Author.FirstName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
                                 <label asp-for="Author.LastName" class="form-label">Last Name <span class="text-danger">*</span></label>
-                                <input asp-for="Author.LastName" class="form-control" placeholder="Enter last name" maxlength="50">
+                                <input asp-for="Author.LastName" class="form-control" placeholder="Enter last name" maxlength="50" />
                                 <span asp-validation-for="Author.LastName" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label asp-for="Author.Biography" class="form-label">Biography</label>
                             <textarea asp-for="Author.Biography" class="form-control" rows="6" placeholder="Enter author biography (optional)" maxlength="1000"></textarea>
                             <div class="form-text">
@@ -55,46 +47,57 @@
                             <span asp-validation-for="Author.Biography" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label class="form-label">Current Photo</label>
                             <div class="current-photo-container">
                                 @if (!string.IsNullOrEmpty(Model.Author.PhotoPath))
                                 {
-                                    <div class="current-photo mb-3">
-                                        <img src="@Model.Author.PhotoPath" alt="Current photo" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
-                                        <div class="mt-2">
-                                            <small class="text-muted">Current photo</small>
-                                        </div>
-                                    </div>
+                                    <img src="~/@Model.Author.PhotoPath" alt="@($"{Model.Author.FirstName} {Model.Author.LastName}")" class="img-thumbnail author-photo"
+                                         onerror="this.src='/images/no-author-photo.jpg'">
                                 }
                                 else
                                 {
-                                    <div class="no-photo mb-3">
-                                        <div class="placeholder-photo">
-                                            <i class="fas fa-user fa-3x text-muted"></i>
-                                            <p class="text-muted mt-2">No photo uploaded</p>
+                                    <div class="author-photo d-flex align-items-center justify-content-center bg-light">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-user fa-3x mb-2"></i>
+                                            <p class="mb-0">No Cover Image</p>
                                         </div>
                                     </div>
-                                }
+                                } 
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label asp-for="PhotoFile" class="form-label">Upload New Photo</label>
-                            <input asp-for="PhotoFile" type="file" class="form-control" accept="image/*">
+                            <input asp-for="PhotoFile" type="file" class="form-control" accept="image/*" id="photoFileInput" />
                             <div class="form-text">
                                 Choose a new photo to replace the current one. Supported formats: JPG, PNG, GIF (Max 5MB)
                             </div>
                             <span asp-validation-for="PhotoFile" class="text-danger"></span>
+
+                            <!-- Image Preview -->
+                            <div id="imagePreview" class="mt-3" style="display: none;">
+                                <label class="form-label">New Photo Preview:</label>
+                                <div class="text-center">
+                                    <div class="preview-wrapper">
+                                        <img id="previewImg" class="img-thumbnail" style="max-width: 200px; max-height: 200px;" />
+                                    </div>
+                                    <div class="mt-2">
+                                        <small class="text-info">
+                                            <i class="fas fa-info-circle me-1"></i>New photo preview
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <input asp-for="Author.PhotoPath" type="hidden" />
 
                         <div class="d-flex gap-2 justify-content-end">
-                            <a href="/Authors/Details/@Model.Author.Id" class="btn btn-secondary">
+                            <a href="/Authors/Details/@Model.Author.Id" class="btn btn-secondary btn-lg">
                                 <i class="fas fa-times me-2"></i>Cancel
                             </a>
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fas fa-save me-2"></i>Save Changes
                             </button>
                         </div>
@@ -110,54 +113,118 @@
         width: 200px;
         height: 200px;
         border: 2px dashed #ddd;
-        border-radius: 8px;
+        border-radius: 12px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         background-color: #f8f9fa;
+        transition: all 0.3s ease;
     }
 
-    .current-photo img {
-        border-radius: 8px;
-        object-fit: cover;
+        .placeholder-photo:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+    .current-photo-wrapper, .preview-wrapper {
+        display: inline-block;
+        position: relative;
     }
+
+    .current-photo-img, #previewImg {
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+        .current-photo-img:hover, #previewImg:hover {
+            transform: scale(1.02);
+        }
 
     .form-label {
         font-weight: 600;
         color: #495057;
+        margin-bottom: 0.5rem;
     }
 
     .text-danger {
-        font-size: 0.875em;
+        font-size: 0.875rem;
     }
 </style>
 
-<script>
-    // Auto hide alerts after 5 seconds
-    setTimeout(function() {
-        $('.alert').fadeOut('slow');
-    }, 5000);
+@section Scripts {
+    <script>
+        // Auto hide alerts after 5 seconds
+        setTimeout(function () {
+            $('.alert').fadeOut('slow');
+        }, 5000);
 
-    // Biography character counter
-    const biographyTextarea = document.querySelector('textarea[name="Author.Biography"]');
-    const charCounter = document.getElementById('bioCharCount');
+        // Biography character counter
+        const bioTextarea = document.querySelector('textarea[name="Author.Biography"]');
+        const bioCounter = document.getElementById('bioCharCount');
 
-    function updateCharCount() {
-        const currentLength = biographyTextarea.value.length;
-        charCounter.textContent = currentLength;
+        function updateBioCount() {
+            const currentLength = bioTextarea.value.length;
+            bioCounter.textContent = currentLength;
 
-        if (currentLength > 1000) {
-            charCounter.style.color = '#dc3545';
-        } else if (currentLength > 800) {
-            charCounter.style.color = '#ffc107';
-        } else {
-            charCounter.style.color = '#6c757d';
+            if (currentLength > 1000) {
+                bioCounter.style.color = '#dc3545';
+            } else if (currentLength > 800) {
+                bioCounter.style.color = '#ffc107';
+            } else {
+                bioCounter.style.color = '#6c757d';
+            }
         }
-    }
 
-    if (biographyTextarea) {
-        biographyTextarea.addEventListener('input', updateCharCount);
-        updateCharCount(); // Initial count
-    }
-</script>
+        if (bioTextarea) {
+            bioTextarea.addEventListener('input', updateBioCount);
+            updateBioCount(); // Initial count
+        }
+
+        // Photo preview
+                const photoInput = document.getElementById('photoFileInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+
+        if (photoInput) {
+            photoInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+
+                if (!file) {
+                    previewImg.src = '';
+                    imagePreview.style.display = 'none';
+                    return;
+                }
+
+                const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+                const fileName = file.name.toLowerCase();
+                const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+
+                const validationSpan = document.querySelector('[data-valmsg-for="PhotoFile"]');
+
+                if (!allowedExtensions.includes(fileExtension)) {
+                    if (validationSpan) {
+                        validationSpan.textContent = "Unsupported file type. Please upload a JPG, JPEG, PNG, or GIF image.";
+                        validationSpan.classList.add("text-danger");
+                    }
+                    previewImg.src = '';
+                    imagePreview.style.display = 'none';
+                    e.target.value = '';
+                    return;
+                } else {
+                    if (validationSpan) validationSpan.textContent = '';
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+    </script>
+}

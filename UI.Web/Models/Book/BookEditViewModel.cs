@@ -9,5 +9,6 @@ namespace UI.Web.Models.Book
         public BookEditDTO Book { get; set; } = new();
         public List<CategoryListDTO> Categories { get; set; } = new();
         public List<AuthorListDTO> Authors { get; set; } = new();
+        public IFormFile? PhotoFile { get; set; }
     }
 }

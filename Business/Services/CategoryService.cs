@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Abstracts;
 using Core.Abstracts.IServices;
+using Core.Concretes.DTOs.Book;
 using Core.Concretes.DTOs.Category;
 using Core.Concretes.Entities;
 using Data;
@@ -107,9 +108,35 @@ namespace Business.Services
         {
             try
             {
-                var categories = await _unitOfWork.CategoryRepository.FindManyAsync(
-                    c => c.Active && !c.Deleted, "Books");
-                var categoryDtos = _mapper.Map<List<CategoryListDTO>>(categories);
+                var categories = await _unitOfWork.CategoryRepository
+                    .FindManyAsync(c => c.Active && !c.Deleted, "Books.Author");
+
+                var categoryDtos = categories.Select(category => new CategoryListDTO
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    CreateDate = category.CreateDate,
+                    Books = category.Books
+                        .Where(b => b.Active && !b.Deleted)
+                        .Select(b => new BookListDTO
+                        {
+                            Id = b.Id,
+                            Title = b.Title,
+                            CategoryName = b.Category.Name,
+                            AuthorFullName = b.Author != null
+                        ? $"{b.Author.FirstName} {b.Author.LastName}"
+                        : "Unknown Author", // null control
+                            ShortDescription = !string.IsNullOrEmpty(b.Description)
+                        ? (b.Description.Length > 150
+                            ? b.Description.Substring(0, 150) + "..."
+                            : b.Description)
+                        : "No description",
+                            AuthorId = b.AuthorId
+                        }).ToList()
+                })
+                .OrderBy(c => c.Name)
+                .ToList();
+
                 return DataResult<List<CategoryListDTO>>.Successful(categoryDtos);
             }
             catch (Exception ex)

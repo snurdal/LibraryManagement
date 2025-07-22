@@ -17,7 +17,7 @@ namespace Core.Concretes.Maps
         {
             #region Author Mapping
             CreateMap<Author, AuthorListDTO>()
-                    .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.Books.Count));
+                    .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.Books.Count(b => !b.Deleted)));
 
             CreateMap<Author, AuthorDetailDTO>()
                     .ForMember(dest => dest.Books, opt => opt.MapFrom(src => src.Books.Where(b => b.Active && !b.Deleted)));
@@ -37,9 +37,10 @@ namespace Core.Concretes.Maps
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.AuthorFullName, opt => opt.MapFrom(src => $"{src.Author.FirstName} {src.Author.LastName}"))
                 .ForMember(dest => dest.ShortDescription, opt => opt.MapFrom(src =>
-                    src.Description != null && src.Description.Length > 150
-                        ? src.Description.Substring(0, 150) + "..."
-                        : src.Description));
+                    src.Description != null && src.Description.Length > 500
+                        ? src.Description.Substring(0, 500) + "..."
+                        : src.Description))
+                .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.AuthorId));
 
             CreateMap<Book, BookDetailDTO>();
             CreateMap<Book, BookEditDTO>();
@@ -49,7 +50,7 @@ namespace Core.Concretes.Maps
 
             #region Category Mapping
             CreateMap<Category, CategoryListDTO>()
-                .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.Books.Count));
+                .ForMember(dest => dest.Books, opt => opt.MapFrom(src => src.Books));
 
             CreateMap<Category, CategoryDetailDTO>();
             CreateMap<Category, CategoryEditDTO>();

@@ -7,6 +7,7 @@ using AutoMapper;
 using Core.Abstracts;
 using Core.Abstracts.IServices;
 using Core.Concretes.DTOs.Author;
+using Core.Concretes.DTOs.Book;
 using Core.Concretes.DTOs.Category;
 using Core.Concretes.Entities;
 using Data;
@@ -95,7 +96,32 @@ namespace Business.Services
             {
                 var authors = await _unitOfWork.AuthorRepository.FindManyAsync(
                     a => a.Active && !a.Deleted, "Books");
-                var authorDtos = _mapper.Map<List<AuthorListDTO>>(authors);
+
+                var authorDtos = authors.Select(author => new AuthorListDTO
+                {
+                    Id = author.Id,
+                    FirstName = author.FirstName,
+                    LastName = author.LastName,
+                    FullName = $"{author.FirstName} {author.LastName}",
+                    PhotoPath = author.PhotoPath,
+                    BookCount = author.Books.Count(b => b.Active && !b.Deleted),
+                    CreateDate = author.CreateDate,
+                    Books = author.Books
+                    .Where(b => b.Active && !b.Deleted)
+                    .Select(b => new BookListDTO
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        CategoryName = b.Category?.Name ?? "Unknown",
+                        AuthorId = b.AuthorId,
+                        AuthorFullName = $"{author.FirstName} {author.LastName}",
+                        CreateDate = b.CreateDate
+                    })
+                    .ToList()
+                })
+                .OrderBy(a => a.FullName)
+                .ToList();
+
                 return DataResult<List<AuthorListDTO>>.Successful(authorDtos);
             }
             catch (Exception ex)

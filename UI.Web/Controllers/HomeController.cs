@@ -22,10 +22,8 @@ namespace UI.Web.Controllers
 
         public async Task<IActionResult> Index(BookSearchDTO? searchDto = null)
         {
-            // Initialize search DTO if null
             searchDto ??= new BookSearchDTO();
 
-            // Get books based on search criteria
             var booksResult = string.IsNullOrEmpty(searchDto.SearchTerm) &&
                              !searchDto.CategoryId.HasValue &&
                              !searchDto.AuthorId.HasValue &&
@@ -33,57 +31,83 @@ namespace UI.Web.Controllers
                 ? await _bookService.GetAllAsync()
                 : await _bookService.SearchAsync(searchDto);
 
+            ViewBag.Authors = await GetAuthorsSelectList();
+            ViewBag.Categories = await GetCategoriesSelectList();
+            ViewBag.SearchDto = searchDto;
+
             if (!booksResult.Success)
             {
-                TempData["Error"] = booksResult.Message;
+                ViewBag.ErrorMessage = booksResult.Message;
                 return View(new List<Core.Concretes.DTOs.Book.BookListDTO>());
             }
 
-            // Get authors and categories for filter dropdowns
-            await PrepareViewData();
-
-            ViewBag.SearchDto = searchDto;
             return View(booksResult.Data);
         }
 
         [HttpPost]
         public async Task<IActionResult> Search(BookSearchDTO searchDto)
         {
-            return await Index(searchDto);
+            var result = await _bookService.SearchAsync(searchDto);
+
+            if (result.Success)
+            {
+                ViewBag.SearchDto = searchDto;
+                ViewBag.Authors = await GetAuthorsSelectList();
+                ViewBag.Categories = await GetCategoriesSelectList();
+                return View("Index", result.Data);
+            }
+
+            ViewBag.SearchDto = searchDto;
+            ViewBag.Authors = await GetAuthorsSelectList();
+            ViewBag.Categories = await GetCategoriesSelectList();
+            ViewBag.ErrorMessage = result.Message;
+
+            return View("Index", new List<Core.Concretes.DTOs.Book.BookListDTO>());
         }
 
-        private async Task PrepareViewData()
+
+        private async Task<List<SelectListItem>> GetAuthorsSelectList()
         {
-            // Get all authors for dropdown
-            var authorsResult = await _authorService.GetAllAsync();
-            if (authorsResult.Success)
+            try
             {
-                ViewBag.Authors = authorsResult.Data.Select(a => new SelectListItem
+                var authorsResult = await _authorService.GetAllAsync();
+                if (authorsResult.Success)
                 {
-                    Value = a.Id.ToString(),
-                    Text = a.FullName
-                }).ToList();
+                    return authorsResult.Data.Select(a => new SelectListItem
+                    {
+                        Value = a.Id.ToString(),
+                        Text = $"{a.FirstName} {a.LastName}"
+                    }).ToList();
+                }
+                return new List<SelectListItem>();
             }
-            else
+            catch
             {
-                ViewBag.Authors = new List<SelectListItem>();
-            }
-
-            // Get all categories for dropdown
-            var categoriesResult = await _categoryService.GetAllAsync();
-            if (categoriesResult.Success)
-            {
-                ViewBag.Categories = categoriesResult.Data.Select(c => new SelectListItem
-                {
-                    Value = c.Id.ToString(),
-                    Text = c.Name
-                }).ToList();
-            }
-            else
-            {
-                ViewBag.Categories = new List<SelectListItem>();
+                return new List<SelectListItem>();
             }
         }
+
+        private async Task<List<SelectListItem>> GetCategoriesSelectList()
+        {
+            try
+            {
+                var categoriesResult = await _categoryService.GetAllAsync();
+                if (categoriesResult.Success)
+                {
+                    return categoriesResult.Data.Select(c => new SelectListItem
+                    {
+                        Value = c.Id.ToString(),
+                        Text = c.Name 
+                    }).ToList();
+                }
+                return new List<SelectListItem>();
+            }
+            catch
+            {
+                return new List<SelectListItem>();
+            }
+        }
+
 
         public IActionResult Privacy()
         {
@@ -95,5 +119,7 @@ namespace UI.Web.Controllers
         {
             return View();
         }
+
+
     }
 }
